@@ -9,8 +9,7 @@ class CallbacksTest < Test::Unit::TestCase
         
         key :name, String
         
-        [ :before_validation_on_create, :before_validation_on_update,
-          :before_validation, :after_validation,
+        [ :before_validation, :after_validation,
           :before_create,     :after_create, 
           :before_update,     :after_update,
           :before_save,       :after_save,
@@ -19,6 +18,13 @@ class CallbacksTest < Test::Unit::TestCase
           send(callback, callback_method)
           define_method(callback_method) do
             history << callback.to_sym
+          end
+        end
+        
+        [:create, :update].each do |action|
+          before_validation "before_validation_on_#{action}_callback", :on => action
+          define_method("before_validation_on_#{action}_callback") do
+            history << "before_validation_on_#{action}".to_sym
           end
         end
         

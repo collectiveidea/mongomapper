@@ -1,91 +1,103 @@
 module MongoMapper
   module Callbacks
-    def self.included(model) #:nodoc:
-      model.class_eval do
-        extend Observable
-        include ActiveSupport::Callbacks
+    extend ActiveSupport::Concern
+    include ActiveSupport::Callbacks
+    
+    included do
+      [:create_or_update, :valid?, :create, :update, :destroy].each do |method|
+        alias_method_chain method, :callbacks
+      end
 
-        callbacks = %w(
-          before_save
-          after_save
-          before_create
-          after_create
-          before_update
-          after_update
-          before_validation
-          after_validation
-          before_validation_on_create
-          after_validation_on_create
-          before_validation_on_update
-          after_validation_on_update
-          before_destroy
-          after_destroy
-        )
+      define_callbacks :initialize, :find, :save, :create, :update, :destroy,
+                       :validation, :terminator => "result == false", :scope => [:kind, :name]
+    end
+    
+    
+    module ClassMethods
+      def after_initialize(*args, &block)
+        options = args.extract_options!
+        options[:prepend] = true
+        set_callback(:initialize, :after, *(args << options), &block)
+      end
 
-        define_callbacks(*callbacks)
+      def after_find(*args, &block)
+        options = args.extract_options!
+        options[:prepend] = true
+        set_callback(:find, :after, *(args << options), &block)
+      end
 
-        callbacks.each do |callback|
-          define_method(callback.to_sym) {}
+      [:save, :create, :update, :destroy].each do |callback|
+        module_eval <<-CALLBACKS, __FILE__, __LINE__
+          def before_#{callback}(*args, &block)
+            set_callback(:#{callback}, :before, *args, &block)
+          end
+      
+          def around_#{callback}(*args, &block)
+            set_callback(:#{callback}, :around, *args, &block)
+          end
+      
+          def after_#{callback}(*args, &block)
+            options = args.extract_options!
+            options[:prepend] = true
+            options[:if] = Array(options[:if]) << "!halted && value != false"
+            set_callback(:#{callback}, :after, *(args << options), &block)
+          end
+        CALLBACKS
+      end
+      
+      def before_validation(*args, &block)
+        options = args.extract_options!
+        if options[:on]
+          options[:if] = Array(options[:if])
+          options[:if] << "@_on_validate == :#{options[:on]}"
         end
+        set_callback(:validation, :before, *(args << options), &block)
+      end
+      
+      def after_validation(*args, &block)
+        options = args.extract_options!
+        options[:if] = Array(options[:if])
+        options[:if] << "!halted"
+        options[:if] << "@_on_validate == :#{options[:on]}" if options[:on]
+        options[:prepend] = true
+        set_callback(:validation, :after, *(args << options), &block)
+      end
+      
+    end
+
+    def create_or_update_with_callbacks #:nodoc:
+      _run_save_callbacks do
+        create_or_update_without_callbacks
+      end
+    end
+    private :create_or_update_with_callbacks
+
+    def create_with_callbacks #:nodoc:
+      _run_create_callbacks do
+        create_without_callbacks
+      end
+    end
+    private :create_with_callbacks
+
+    def update_with_callbacks(*args) #:nodoc:
+      _run_update_callbacks do
+        update_without_callbacks(*args)
+      end
+    end
+    private :update_with_callbacks
+
+    def valid_with_callbacks? #:nodoc:
+      @_on_validate = new_record? ? :create : :update
+      _run_validation_callbacks do
+        valid_without_callbacks?
       end
     end
 
-    def valid? #:nodoc:
-      return false if callback(:before_validation) == false
-      result = new? ? callback(:before_validation_on_create) : callback(:before_validation_on_update)
-      return false if false == result
-
-      result = super
-      callback(:after_validation)
-
-      new? ? callback(:after_validation_on_create) : callback(:after_validation_on_update)
-      return result
+    def destroy_with_callbacks #:nodoc:
+      _run_destroy_callbacks do
+        destroy_without_callbacks
+      end
     end
-
-    def destroy #:nodoc:
-      return false if callback(:before_destroy) == false
-      result = super
-      callback(:after_destroy)
-      result
-    end
-
-    private
-      def callback(method)
-        result = run_callbacks(method) { |result, object| false == result }
-
-        if result != false && respond_to?(method)
-          result = send(method)
-        end
-
-        notify(method)
-        return result
-      end
-
-      def notify(method) #:nodoc:
-        self.class.changed
-        self.class.notify_observers(method, self)
-      end
-
-      def create_or_update #:nodoc:
-        return false if callback(:before_save) == false
-        if result = super
-          callback(:after_save)
-        end
-        result
-      end
-
-      def create #:nodoc:
-        return false if callback(:before_create) == false
-        result = super
-        callback(:after_create)
-        result
-      end
-
-      def update(*args) #:nodoc:
-        return false if callback(:before_update) == false
-        result = super
-        callback(:after_update)
-        result
-      end
+    
   end
 end

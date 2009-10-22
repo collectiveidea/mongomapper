@@ -7,7 +7,7 @@ class Comment
   key :body, String
   
   attr_accessor :callers
-  before_validation :record_callers
+  set_callback :validation, :before, :record_callers
 
   def after_validation
     record_callers

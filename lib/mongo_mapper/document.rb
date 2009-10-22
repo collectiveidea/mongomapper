@@ -10,7 +10,6 @@ module MongoMapper
         include Callbacks
         include Dirty
         include RailsCompatibility::Document
-        extend Validations::Macros
         extend ClassMethods
         extend Finders
         
@@ -188,7 +187,7 @@ module MongoMapper
         key :created_at, Time
         key :updated_at, Time
         
-        class_eval { before_save :update_timestamps }
+        class_eval { set_callback :save, :before, :update_timestamps }
       end
       
       def single_collection_inherited?
