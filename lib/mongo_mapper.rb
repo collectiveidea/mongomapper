@@ -1,4 +1,5 @@
-require 'active_support'
+require 'active_support/all'
+require 'active_model'
 require 'mongo'
 require 'validatable'
 
