@@ -1,3 +1,4 @@
+$:.unshift File.join(File.dirname(__FILE__), '..', 'vendor', 'validatable', 'lib')
 require 'active_support/all'
 require 'active_model'
 require 'mongo'
