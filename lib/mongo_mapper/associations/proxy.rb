@@ -1,6 +1,6 @@
 module MongoMapper
   module Associations
-    class Proxy < BasicObject
+    class Proxy < ActiveSupport::BasicObject
       attr_reader :owner, :association
       
       def initialize(owner, association)

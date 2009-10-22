@@ -1,6 +1,6 @@
 module MongoMapper
   module Pagination
-    class PaginationProxy < BasicObject
+    class PaginationProxy < ActiveSupport::BasicObject
       attr_accessor :subject
       attr_reader :total_entries, :per_page, :current_page
       alias limit per_page
