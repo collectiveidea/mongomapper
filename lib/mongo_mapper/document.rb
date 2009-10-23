@@ -12,6 +12,7 @@ module MongoMapper
         include RailsCompatibility::Document
         extend ClassMethods
         extend Finders
+        extend ActiveModel::Naming
         
         def self.per_page
           25

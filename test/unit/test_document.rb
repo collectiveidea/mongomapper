@@ -60,6 +60,10 @@ class DocumentTest < Test::Unit::TestCase
       @document.collection.should be_instance_of(Mongo::Collection)
       @document.collection.name.should == 'foobar'
     end
+    
+    should "have a model_name method" do
+      @document.model_name.should be_kind_of(ActiveModel::Name)
+    end
   end # Document class
   
   context "Documents that inherit from other documents" do
