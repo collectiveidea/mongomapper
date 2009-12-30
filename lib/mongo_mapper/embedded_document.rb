@@ -28,6 +28,8 @@ module MongoMapper
         unless subclass.embeddable?
           subclass.set_collection_name(collection_name)
         end
+        
+        key :_type, String unless keys[:_type]
 
         (@subclasses ||= []) << subclass
       end

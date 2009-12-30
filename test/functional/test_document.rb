@@ -954,7 +954,6 @@ class DocumentTest < Test::Unit::TestCase
     setup do
       class ::DocParent
         include MongoMapper::Document
-        key :_type, String
         key :name, String
       end
       DocParent.collection.remove

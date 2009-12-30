@@ -202,14 +202,12 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
   
   context "keys" do
     should "be inherited" do
-      Grandparent.keys.keys.sort.should == ['_id', 'grandparent']
-      Parent.keys.keys.sort.should == ['_id', 'grandparent', 'parent']
-      Child.keys.keys.sort.should  == ['_id', 'child', 'grandparent', 'parent']
+      Grandparent.keys.keys.sort.should == ['_id', '_type', 'grandparent']
+      Parent.keys.keys.sort.should == ['_id', '_type', 'grandparent', 'parent']
+      Child.keys.keys.sort.should  == ['_id', '_type', 'child', 'grandparent', 'parent']
     end
     
     should "propogate to subclasses if key added after class definition" do
-      Grandparent.key :_type, String
-      
       Grandparent.keys.keys.sort.should == ['_id', '_type', 'grandparent']
       Parent.keys.keys.sort.should      == ['_id', '_type', 'grandparent', 'parent']
       Child.keys.keys.sort.should       == ['_id', '_type', 'child', 'grandparent', 'parent']
@@ -481,7 +479,8 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
     end
     
     should "convert dates into times" do
-      document = Class.new(@document) do
+      document = Class.new do
+        include MongoMapper::EmbeddedDocument
         key :start_date, Date
       end
       doc = document.new :start_date => "12/05/2009"

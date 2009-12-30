@@ -67,7 +67,6 @@ class Message
 
   key :body, String
   key :position, Integer
-  key :_type, String
   key :room_id, ObjectId
 
   belongs_to :room
@@ -94,7 +93,6 @@ end
 class Account
   include MongoMapper::Document
   
-  key :_type, String
   key :room_id, ObjectId
   key :last_logged_in, Time
   
@@ -197,7 +195,6 @@ end
 class Media
   include MongoMapper::EmbeddedDocument
 
-  key :_type, String
   key :file, String
   
   key :visible, Boolean
@@ -231,7 +228,6 @@ module TrModels
   class Transport
     include MongoMapper::EmbeddedDocument
 
-    key :_type, String
     key :license_plate, String
     key :purchased_on, Date
   end
