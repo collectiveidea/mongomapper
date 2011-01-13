@@ -72,7 +72,7 @@ module MongoMapper
           def method_missing(method, *args, &block)
             if klass.respond_to?(method)
               result = klass.send(method, *args, &block)
-              result.is_a?(Plucky::Query) ? 
+              result.is_a?(Plucky::Query) ?
                 query.merge(result) : super
             else
               super
@@ -101,7 +101,7 @@ module MongoMapper
           end
 
           def foreign_key
-            options[:foreign_key] || proxy_owner.class.name.to_s.underscore.gsub("/", "_") + "_id"
+            options[:foreign_key] || proxy_owner.class.name.foreign_key
           end
       end
     end

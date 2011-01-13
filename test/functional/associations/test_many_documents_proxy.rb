@@ -248,7 +248,7 @@ class ManyDocumentsProxyTest < Test::Unit::TestCase
     should "work on association" do
       project = Project.create
       3.times { |i| project.statuses.create(:name => i.to_s) }
-      
+
       JSON.parse(project.statuses.to_json).collect{|status| status["name"] }.sort.should == ["0","1","2"]
     end
   end
@@ -257,7 +257,7 @@ class ManyDocumentsProxyTest < Test::Unit::TestCase
     should "work on association" do
       project = Project.create
       3.times { |i| project.statuses.create(:name => i.to_s) }
-      
+
       project.statuses.as_json.collect{|status| status["name"] }.sort.should == ["0","1","2"]
     end
   end
@@ -610,6 +610,21 @@ class ManyDocumentsProxyTest < Test::Unit::TestCase
         @thing.properties.count.should == 0
         Property.count.should == 3
       end
+    end
+  end
+
+  context "namespaced foreign keys" do
+    setup do
+      News::Paper.many :articles, :class_name => 'News::Article'
+      News::Article.belongs_to :paper, :class_name => 'News::Paper'
+
+      @paper = News::Paper.create
+    end
+
+    should "properly infer the foreign key" do
+      article = @paper.articles.create
+      article.should respond_to(:paper_id)
+      article.paper_id.should == @paper.id
     end
   end
 end
