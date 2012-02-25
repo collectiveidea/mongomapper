@@ -156,7 +156,7 @@ class ModifierTest < Test::Unit::TestCase
         @page.tags.should == %w(foo)
 
         @page2.reload
-        @page.tags.should == %w(foo)
+        @page2.tags.should == %w(foo)
       end
 
       should "work with ids and modifier hash" do
@@ -166,7 +166,7 @@ class ModifierTest < Test::Unit::TestCase
         @page.tags.should == %w(foo)
 
         @page2.reload
-        @page.tags.should == %w(foo)
+        @page2.tags.should == %w(foo)
       end
     end
 
@@ -184,7 +184,7 @@ class ModifierTest < Test::Unit::TestCase
         @page.tags.should == @tags
 
         @page2.reload
-        @page.tags.should == @tags
+        @page2.tags.should == @tags
       end
 
       should "work with ids and modifier hash" do
@@ -194,7 +194,7 @@ class ModifierTest < Test::Unit::TestCase
         @page.tags.should == @tags
 
         @page2.reload
-        @page.tags.should == @tags
+        @page2.tags.should == @tags
       end
     end
 
@@ -211,7 +211,7 @@ class ModifierTest < Test::Unit::TestCase
         @page.tags.should == %w(bar)
 
         @page2.reload
-        @page.tags.should == %w(bar)
+        @page2.tags.should == %w(bar)
       end
 
       should "be able to pull with ids and modifier hash" do
@@ -221,7 +221,7 @@ class ModifierTest < Test::Unit::TestCase
         @page.tags.should == %w(bar)
 
         @page2.reload
-        @page.tags.should == %w(bar)
+        @page2.tags.should == %w(bar)
       end
     end
 
@@ -238,7 +238,7 @@ class ModifierTest < Test::Unit::TestCase
         @page.tags.should == %w(baz)
 
         @page2.reload
-        @page.tags.should == %w(baz)
+        @page2.tags.should == %w(baz)
       end
 
       should "work with ids and modifier hash" do
@@ -248,7 +248,7 @@ class ModifierTest < Test::Unit::TestCase
         @page.tags.should == %w(baz)
 
         @page2.reload
-        @page.tags.should == %w(baz)
+        @page2.tags.should == %w(baz)
       end
     end
 
@@ -265,7 +265,7 @@ class ModifierTest < Test::Unit::TestCase
         @page.tags.should == %w(foo)
 
         @page2.reload
-        @page.tags.should == %w(foo)
+        @page2.tags.should == %w(foo)
       end
 
       should "be able to add to set with ids and modifier hash" do
@@ -275,7 +275,7 @@ class ModifierTest < Test::Unit::TestCase
         @page.tags.should == %w(foo)
 
         @page2.reload
-        @page.tags.should == %w(foo)
+        @page2.tags.should == %w(foo)
       end
     end
 
@@ -292,7 +292,7 @@ class ModifierTest < Test::Unit::TestCase
         @page.tags.should == %w(foo)
 
         @page2.reload
-        @page.tags.should == %w(foo)
+        @page2.tags.should == %w(foo)
       end
 
       should "be able to push uniq with ids and modifier hash" do
@@ -302,7 +302,7 @@ class ModifierTest < Test::Unit::TestCase
         @page.tags.should == %w(foo)
 
         @page2.reload
-        @page.tags.should == %w(foo)
+        @page2.tags.should == %w(foo)
       end
     end
 
@@ -325,7 +325,7 @@ class ModifierTest < Test::Unit::TestCase
     end
   end
 
-  context "InstanceMethods" do
+  context "instance methods" do
     should "be able to unset with keys" do
       page = @page_class.create(:title => 'Foo', :tags => %w(foo))
       page.unset(:title, :tags)
@@ -368,7 +368,7 @@ class ModifierTest < Test::Unit::TestCase
       page.reload
       page.tags.should == %w(foo)
     end
-    
+
     should "be able to push_all with modifier hashes" do
       page = @page_class.create
       page.push_all(:tags => %w(foo bar))
@@ -384,7 +384,7 @@ class ModifierTest < Test::Unit::TestCase
       page.reload
       page.tags.should == %w(bar)
     end
-    
+
     should "be able to pull_all with criteria and modifier hashes" do
       page = @page_class.create(:tags => %w(foo bar baz))
       page.pull_all(:tags => %w(foo bar))
@@ -398,13 +398,13 @@ class ModifierTest < Test::Unit::TestCase
       page2 = @page_class.create
 
       page.add_to_set(:tags => 'foo')
-      page.add_to_set(:tags => 'foo')
+      page2.add_to_set(:tags => 'foo')
 
       page.reload
       page.tags.should == %w(foo)
 
       page2.reload
-      page.tags.should == %w(foo)
+      page2.tags.should == %w(foo)
     end
 
     should "be able to push uniq with criteria and modifier hash" do
@@ -412,13 +412,13 @@ class ModifierTest < Test::Unit::TestCase
       page2 = @page_class.create
 
       page.push_uniq(:tags => 'foo')
-      page.push_uniq(:tags => 'foo')
+      page2.push_uniq(:tags => 'foo')
 
       page.reload
       page.tags.should == %w(foo)
 
       page2.reload
-      page.tags.should == %w(foo)
+      page2.tags.should == %w(foo)
     end
 
     should "be able to pop with modifier hashes" do
